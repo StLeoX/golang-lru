@@ -181,6 +181,16 @@ func (c *Cache[K, V]) Remove(key K) (present bool) {
 	return
 }
 
+// RemoveWithoutEvict removes the provided key from the cache, without calling
+// back onEvicted. Use it when you want to proactively remove an item that has
+// already been processed.
+func (c *Cache[K, V]) RemoveWithoutEvict(key K) (present bool) {
+	c.lock.Lock()
+	present = c.lru.Remove(key)
+	c.lock.Unlock()
+	return
+}
+
 // Resize changes the cache size.
 func (c *Cache[K, V]) Resize(size int) (evicted int) {
 	var ks []K
